@@ -2,13 +2,12 @@
 
 
 '''
-Given a set of points, find the N centroids that cluster them,
-minimizing intra-cluster point distance.
+Cluster a set of points into N groups that minimize intra-cluster distance.
 
 
-- choose N random points to serve as centroids
-- cluster each point into a bucket with its nearest centroid
-- replace centroids with the center of each bucket
+- choose N random points as centroids
+- cluster each point with its nearest centroid
+- replace centroids with the center of each cluster
 - repeat until clusters stabalize
 
 https://en.wikipedia.org/wiki/K-means_clustering
@@ -28,6 +27,7 @@ def cluster(points, n):
 
     for i in range(100):
         clusters = defaultdict(list)
+        error = 0
 
         for point in points:
             # bucket each point with the nearest centroid
@@ -42,6 +42,7 @@ def cluster(points, n):
                     nearest_centroid = centroid
 
             clusters[nearest_centroid].append(point)
+            error += nearest_distance
 
         # refine choice of centroids by finding center of each cluster
         centroids = []
@@ -59,7 +60,7 @@ def cluster(points, n):
         if len(centroids) < n:
             centroids += sample(points, 1)
 
-    return centroids
+    return clusters, error
 
 
 
@@ -91,5 +92,14 @@ for i in range(CENTROID_COUNT):
 
 # run clustering algorithm
 print(sorted(centroids))
-res = cluster(points, CENTROID_COUNT)
+res, error = cluster(points, CENTROID_COUNT)
+print(sorted(res))
+
+
+# to improve accuracy, run a few times and use result with least error
+for i in range(5):
+    next_res, next_error = cluster(points, CENTROID_COUNT)
+    if next_error < error:
+        res = next_res
+        error = next_error
 print(sorted(res))
