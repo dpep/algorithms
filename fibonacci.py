@@ -37,9 +37,7 @@ def fib_iterative(n):
     prev = 0
     cur = 1
     for i in range(2, n + 1):
-        tmp = prev + cur
-        prev = cur
-        cur = tmp
+        prev, cur = cur, prev + cur
 
     return cur
 
